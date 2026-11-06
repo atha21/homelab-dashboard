@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base ──────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    background-color: #09090b; /* zinc-950 */
+    color: #f4f4f5;            /* zinc-100 — WCAG AA on zinc-950 */
+  }
+
+  body {
+    min-height: 100dvh;
+    /* Subtle radial mesh: a single very soft glow in the top-left corner adds
+       depth without the "AI orb" pattern — it is almost invisible at rest      */
+    background-image:
+      radial-gradient(ellipse 80% 50% at 0% 0%, rgba(56, 189, 248, 0.045) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(139, 92, 246, 0.04) 0%, transparent 55%);
+  }
+
+  /* Cursor affordances — R-39 */
+  button:not(:disabled),
+  a[href],
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+  :disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  /* Focus ring — R-32 */
+  :focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+  }
+
+  /* Reduced-motion — R-39 */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ── Components ────────────────────────────────────────────────── */
+@layer components {
+  /* Glass card — backdrop depth on dark bg */
+  .glass {
+    @apply backdrop-blur-md bg-zinc-900/50 border border-white/[0.07] rounded-xl;
+  }
+
+  /* Metric card — hover border lifts with cyan accent */
+  .metric-card {
+    @apply glass transition-all duration-300
+           hover:border-white/[0.12] hover:bg-zinc-900/60;
+  }
+
+  /* Thin scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #3f3f46 transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar        { width: 5px; height: 5px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb  { background: #3f3f46; border-radius: 9999px; }
+  .scrollbar-thin::-webkit-scrollbar-track  { background: transparent; }
+}
+
+/* ── Utilities ─────────────────────────────────────────────────── */
+@layer utilities {
+  /* Glow shadows — used sparingly on active elements / accent bars */
+  .shadow-glow-cyan    { box-shadow: 0 0 12px 2px rgba(34, 211, 238, 0.25); }
+  .shadow-glow-sky     { box-shadow: 0 0 12px 2px rgba(56, 189, 248, 0.25); }
+  .shadow-glow-emerald { box-shadow: 0 0 12px 2px rgba(52, 211, 153, 0.25); }
+  .shadow-glow-purple  { box-shadow: 0 0 12px 2px rgba(167, 139, 250, 0.25); }
+  .shadow-glow-amber   { box-shadow: 0 0 12px 2px rgba(251, 191, 36, 0.22); }
+  .shadow-glow-rose    { box-shadow: 0 0 12px 2px rgba(251, 113, 133, 0.25); }
+
+  /* Ping animation for the live-status dot — two-ring ripple effect */
+  .ping-dot {
+    position: relative;
+  }
+  .ping-dot::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 9999px;
+    background: currentColor;
+    opacity: 0;
+    animation: ping-ring 2s ease-out infinite;
+  }
+  @keyframes ping-ring {
+    0%   { transform: scale(0.8); opacity: 0.6; }
+    100% { transform: scale(2);   opacity: 0; }
+  }
+}
+
+/* pulse_dot used by Tailwind animation utility defined in tailwind.config.js */

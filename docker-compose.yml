@@ -1,0 +1,37 @@
+services:
+  homelab-dashboard:
+    build: .
+    container_name: homelab-dashboard
+    restart: unless-stopped
+
+    # Host networking gives psutil accurate bandwidth counters and
+    # lets it see all listening ports without NAT translation.
+    network_mode: "host"
+
+    # pid:host lets psutil see every host process (ProcessPage).
+    pid: "host"
+
+    # NET_ADMIN lets psutil read socket/connection tables for all users.
+    cap_add:
+      - NET_ADMIN
+
+    volumes:
+      # Read-only Docker socket — DockerPage container listing.
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Host filesystem — lets psutil see real host disk partitions inside the container.
+      - /:/host:ro
+
+    # NVIDIA GPU passthrough (GT 1030) — requires NVIDIA Container Toolkit on host.
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
